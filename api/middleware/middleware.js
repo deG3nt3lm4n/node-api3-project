@@ -1,5 +1,6 @@
 const Users = require('../users/users-model')
 
+
 function logger(req, res, next) {
   // DO YOUR MAGIC
   req.requestTime = Date.now()
@@ -17,14 +18,12 @@ async function validateUserId(req, res, next) {
 
   try {
     const user = await Users.getById(id)
-
     if(!user){
-      res.status(404).json({message: 'user doesnt exists'})
+      res.status(404).json({ message: "user not found" })
     }else{
       req.user = user
       next()
     }
-
   } catch (error) {
     res.status(500).json({message: error.message})
   }
@@ -33,12 +32,11 @@ async function validateUserId(req, res, next) {
 
 function validateUser(req, res, next) {
   // DO YOUR MAGIC
-  const userData = req.body
+  const {name} = req.body
 
-  if(!userData.name){
+  if(!name){
     res.status(400).json({ message: "missing required name field" })
   }else{
-    req.name = userData
     next()
   }
 
@@ -46,6 +44,14 @@ function validateUser(req, res, next) {
 
 function validatePost(req, res, next) {
   // DO YOUR MAGIC
+
+  if(!req.body || !req.body.text){
+    res.status(400).json({ message: "missing required text field" })
+  }else{
+    next()
+  }
+
+
 }
 
 // do not forget to expose these functions to other modules
@@ -53,5 +59,6 @@ function validatePost(req, res, next) {
 module.exports = {
   logger,
   validateUserId,
-  validateUser
+  validateUser,
+  validatePost
 }
